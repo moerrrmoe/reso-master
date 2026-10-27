@@ -50,7 +50,7 @@ const encodeVideo = (inputPath, outputPath, { width }) => {
       }
 
       ffmpeg(inputPath)
-        .videoFilters(`scale=${width}:-2`)
+        .videoFilters(`scale=-2:${width}`)
         .videoCodec(CODEC_TO_ENCODER[codec_name] || 'libx264')
         .audioCodec('copy')
         .output(outputPath)
