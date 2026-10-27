@@ -22,6 +22,13 @@ COPY . .
 # Ensure storage directories exist
 RUN mkdir -p downloads encode_output bot_session prisma
 
+# Default environment variables
+ENV DATABASE_URL="file:/app/prisma/dev.db"
+ENV DOWNLOAD_VIDEOS_PATH="downloads"
+ENV ENCODED_VIDEOS_PATH="encode_output"
+ENV SESSION_PATH="bot_session"
+ENV PORT=3000
+
 # Install PM2 to run both bot & worker under a single managed container
 RUN npm install -g pm2
 
