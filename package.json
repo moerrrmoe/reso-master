@@ -2,7 +2,9 @@
   "type": "module",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "bot": "node bot.js",
+    "worker": "node worker.js"
   },
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",

@@ -80,6 +80,68 @@ node bot
 node worker
 ```
 
+## Ubuntu Server Deployment
+
+### Method 1: Systemd (Recommended)
+
+Systemd automatically starts both services on boot and restarts them if they crash.
+
+1. **Copy the service files**:
+   ```bash
+   # Update WorkingDirectory and User in the service files if your username is not 'ubuntu'
+   sudo cp reso-bot.service /etc/systemd/system/
+   sudo cp reso-worker.service /etc/systemd/system/
+   ```
+
+2. **Reload and enable**:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable reso-bot reso-worker
+   ```
+
+3. **Start services**:
+   ```bash
+   sudo systemctl start reso-bot reso-worker
+   ```
+
+4. **Monitor logs & status**:
+   ```bash
+   # Check status
+   sudo systemctl status reso-bot
+   sudo systemctl status reso-worker
+
+   # Live logs
+   journalctl -u reso-bot -f
+   journalctl -u reso-worker -f
+   ```
+
+---
+
+### Method 2: PM2
+
+If you prefer PM2 process manager:
+
+1. **Install PM2 globally**:
+   ```bash
+   sudo npm install -g pm2
+   ```
+
+2. **Start with ecosystem file**:
+   ```bash
+   pm2 start ecosystem.config.cjs
+   ```
+
+3. **Save and persist on boot**:
+   ```bash
+   pm2 save
+   pm2 startup
+   ```
+
+4. **View logs**:
+   ```bash
+   pm2 logs
+   ```
+
 ## Authorization
 
 Send `/start <SECRET_KEY>` to the bot via Telegram. Your chat ID will be stored and you will be served from that point forward. Unauthorized senders are ignored.
