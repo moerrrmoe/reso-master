@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  reso:
+    build: .
+    container_name: reso-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - reso_session:/app/bot_session
+      - reso_db:/app/prisma
+      - reso_downloads:/app/downloads
+      - reso_encoded:/app/encode_output
+
+volumes:
+  reso_session:
+  reso_db:
+  reso_downloads:
+  reso_encoded:
