@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import http from 'http';
 import { NewMessage } from 'teleproto/events';
 import client from './src/client/client.js';
 import authenticateClient from './src/auth/auth.js';
@@ -55,8 +56,19 @@ const startBot = async () => {
   const downloadWorker = startDownloadWorker(client);
   const sendWorker = startSendWorker(client);
 
+  // Lightweight HTTP health check for Coolify / Docker
+  const healthPort = process.env.PORT || 3000;
+  const healthServer = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+  });
+  healthServer.listen(healthPort, () => {
+    console.log(`[Health] Server listening on port ${healthPort}`);
+  });
+
   const shutdown = async () => {
     console.log('\n[Bot] Shutting down...');
+    healthServer.close();
     downloadWorker.stop();
     sendWorker.stop();
     try {

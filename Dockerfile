@@ -25,5 +25,10 @@ RUN mkdir -p downloads encode_output bot_session prisma
 # Install PM2 to run both bot & worker under a single managed container
 RUN npm install -g pm2
 
-# Push schema if needed and run both services with pm2-runtime
-CMD ["sh", "-c", "npx prisma db push && pm2-runtime start ecosystem.config.cjs"]
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
+
+# Expose lightweight health check port for Coolify / Docker
+EXPOSE 3000
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
