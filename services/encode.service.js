@@ -28,14 +28,14 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobe.path);
 
 /**
- * Encode a single video to the given output path at the given width.
- * Skips encoding if source width is already <= target width.
+ * Encode a single video to the given output path at the given height (e.g. 720p, 480p).
+ * Skips encoding if source height is already <= target height.
  * @param {string} inputPath
  * @param {string} outputPath
- * @param {{ width: number }} options
- * @returns {Promise<void>}
+ * @param {{ height: number }} options
+ * @returns {Promise<string|null>}
  */
-const encodeVideo = (inputPath, outputPath, { width }) => {
+const encodeVideo = (inputPath, outputPath, { height }) => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(inputPath, (err, metadata) => {
       if (err) return reject(err);
@@ -43,21 +43,21 @@ const encodeVideo = (inputPath, outputPath, { width }) => {
       const videoStream = metadata.streams.find((s) => s.codec_type === 'video');
       if (!videoStream) return reject(new Error('No video stream found'));
 
-      const { width: srcWidth, codec_name } = videoStream;
-      if (srcWidth <= width) {
-        console.log(`[Encode] Skipping ${width}p – source is only ${srcWidth}px wide.`);
+      const { height: srcHeight, codec_name } = videoStream;
+      if (srcHeight <= height) {
+        console.log(`[Encode] Skipping ${height}p – source is only ${srcHeight}px tall.`);
         return resolve(null); // null = skipped
       }
 
       ffmpeg(inputPath)
-        .videoFilters(`scale=-2:${width}`)
+        .videoFilters(`scale=-2:${height}`)
         .videoCodec(CODEC_TO_ENCODER[codec_name] || 'libx264')
         .audioCodec('copy')
         .output(outputPath)
         .on('progress', ({ percent }) => {
-          process.stdout.write(`\r[Encode ${width}p] ${Math.floor(percent || 0)}%`);
+          process.stdout.write(`\r[Encode ${height}p] ${Math.floor(percent || 0)}%`);
         })
-        .on('end', () => { console.log(`\n[Encode] ${width}p done.`); resolve(outputPath); })
+        .on('end', () => { console.log(`\n[Encode] ${height}p done.`); resolve(outputPath); })
         .on('error', (e) => { console.error(`\n[Encode Error]:`, e.message); reject(e); })
         .run();
     });
@@ -87,7 +87,7 @@ const encodeNextJob = async () => {
     const outputPath = path.join(ENCODE_OUTPUT_DIR, `${safeName}_${res}.mp4`);
 
     try {
-      const result = await encodeVideo(video.location, outputPath, { width: res });
+      const result = await encodeVideo(video.location, outputPath, { height: res });
       if (result !== null) {
         await prisma.encodedVideo.create({
           data: { videoId: video.id, location: outputPath, status: 'awaiting_send' },
