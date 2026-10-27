@@ -1,0 +1,26 @@
+-- CreateTable
+CREATE TABLE "Video" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "title" TEXT NOT NULL,
+    "msgId" INTEGER NOT NULL,
+    "location" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "VideoDownloadQueue" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "title" TEXT NOT NULL,
+    "msgId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "EncodeQueue" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "videoId" INTEGER NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    CONSTRAINT "EncodeQueue_videoId_fkey" FOREIGN KEY ("videoId") REFERENCES "Video" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);

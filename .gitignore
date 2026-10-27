@@ -1,0 +1,38 @@
+# ── Dependencies ──────────────────────────────────────────────────
+node_modules/
+
+# ── Environment / Secrets ─────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Telegram Session ──────────────────────────────────────────────
+# Contains auth tokens that give full account access
+bot_session/
+*.session
+*.session-journal
+
+# ── SQLite Database ───────────────────────────────────────────────
+prisma/*.db
+prisma/*.db-journal
+prisma/*.db-shm
+prisma/*.db-wal
+
+# ── Downloaded / Encoded media ────────────────────────────────────
+downloads/
+encode_output/
+
+# ── macOS ─────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Logs ──────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Editor ────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
