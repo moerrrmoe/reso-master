@@ -15,14 +15,12 @@ export const handleStartCommand = async (message) => {
   const expectedKey = process.env.SECRET_KEY?.trim();
 
   if (!expectedKey) {
-    await message.reply({ message: '⚠️ Server configuration error: SECRET_KEY is not set.' }).catch(() => {});
+    await message.reply({ message: '⚠️ Server configuration error: SECRET_KEY is not set.' }).catch(() => { });
     return true;
   }
 
   if (!providedKey || providedKey !== expectedKey) {
-    await message.reply({
-      message: '🚫 Access denied. Invalid or missing key.\nUsage: /start <pass_key>',
-    }).catch(() => {});
+    console.log('Message Skipped')
     return true;
   }
 
@@ -31,7 +29,7 @@ export const handleStartCommand = async (message) => {
   const firstName = sender?.firstName || sender?.title || sender?.username || 'Telegram User';
 
   if (!chatId) {
-    await message.reply({ message: '⚠️ Could not determine your chat ID.' }).catch(() => {});
+    console.log('Message Skipped')
     return true;
   }
 
@@ -44,7 +42,7 @@ export const handleStartCommand = async (message) => {
   console.log(`[Auth] "${firstName}" (chatId: ${chatId}, id: ${user.id}) authenticated.`);
   await message.reply({
     message: `✅ Welcome, ${firstName}! Access granted.\nYou can now send video files to be queued for download and encoding.`,
-  }).catch(() => {});
+  }).catch(() => { });
 
   return true;
 };
