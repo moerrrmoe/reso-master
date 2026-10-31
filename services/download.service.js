@@ -100,7 +100,7 @@ export const processNextDownload = async (client) => {
   }
 
   const safeTitle = sanitizeFilename(item.title);
-  const targetPath = path.join(DEFAULT_DOWNLOAD_DIR, `${item.msgId}_${safeTitle}`);
+  const targetPath = path.join(DEFAULT_DOWNLOAD_DIR, `${item.msgId}_${safeTitle}.mp4`);
 
   console.log(`[DownloadQueue] Downloading "${item.title}" -> ${targetPath}`);
 
