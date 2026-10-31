@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import prisma from '../src/prisma.js';
 import { deleteFile } from '../utils/file.utils.js';
-import { getVideoDetails } from './encode.service.js';
+import { getVideoDetails, extractThumbnail } from './encode.service.js';
 import { Api } from 'teleproto';
 
 let isSending = false;
@@ -48,11 +48,19 @@ export const processAwaitingSends = async (client) => {
       const fileName = path.basename(ev.location);
       console.log(`[SendWorker] Sending "${fileName}" -> chat ${recipientChatId} ...`);
 
+      let thumbnailPath = null;
       try {
         const videoDetails = await getVideoDetails(ev.location);
 
+        try {
+          thumbnailPath = await extractThumbnail(ev.location);
+        } catch (thumbErr) {
+          console.warn(`[SendWorker] Could not generate thumbnail for ${fileName}:`, thumbErr.message);
+        }
+
         await client.sendFile(recipientChatId, {
           file: ev.location,
+          thumb: thumbnailPath || undefined,
           caption: `✅ Encoded video ready:\n${fileName}`,
           supportsStreaming: true,
           attributes: [
@@ -79,6 +87,10 @@ export const processAwaitingSends = async (client) => {
         }
       } catch (sendErr) {
         console.error(`[SendWorker] Failed to send EncodedVideo #${ev.id}:`, sendErr.message);
+      } finally {
+        if (thumbnailPath) {
+          deleteFile(thumbnailPath);
+        }
       }
     }
   } catch (err) {

@@ -87,6 +87,30 @@ export const getVideoDetails = (videoPath) => {
 };
 
 /**
+ * Extract a thumbnail frame from a video file.
+ * @param {string} videoPath
+ * @param {string} [outputPath] - Defaults to input path without extension + '.jpg'
+ * @param {string|number} [timemark='00:00:01'] - Timestamp or seconds to capture
+ * @returns {Promise<string>} Path of the generated thumbnail image
+ */
+export const extractThumbnail = (videoPath, outputPath = null, timemark = '00:00:01') => {
+  return new Promise((resolve, reject) => {
+    const finalOutputPath = outputPath || `${videoPath.replace(/\.[^/.]+$/, '')}_thumb.jpg`;
+    const folder = path.dirname(finalOutputPath);
+    const filename = path.basename(finalOutputPath);
+
+    ffmpeg(videoPath)
+      .screenshots({
+        timestamps: [timemark],
+        filename,
+        folder,
+      })
+      .on('end', () => resolve(finalOutputPath))
+      .on('error', (err) => reject(err));
+  });
+};
+
+/**
  * Encode the next pending job from EncodeQueue.
  */
 const encodeNextJob = async () => {
