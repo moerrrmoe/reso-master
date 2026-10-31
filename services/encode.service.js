@@ -64,6 +64,28 @@ const encodeVideo = (inputPath, outputPath, { height }) => {
   });
 };
 
+export const getVideoDetails = (videoPath) => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(videoPath, (err, metadata) => {
+      if (err) return reject(err);
+
+      const videoStream = metadata?.streams?.find((s) => s.codec_type === 'video');
+      if (!videoStream) {
+        return reject(new Error('No video stream found in file'));
+      }
+
+      const rawDuration = metadata?.format?.duration || videoStream.duration || 0;
+
+      resolve({
+        width: videoStream.width || 0,
+        height: videoStream.height || 0,
+        codec: videoStream.codec_name || 'unknown',
+        duration: Math.round(Number(rawDuration)) || 0,
+      });
+    });
+  });
+};
+
 /**
  * Encode the next pending job from EncodeQueue.
  */

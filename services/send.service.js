@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import prisma from '../src/prisma.js';
 import { deleteFile } from '../utils/file.utils.js';
+import { getVideoDetails } from './encode.service.js';
+import { Api } from 'teleproto';
 
 let isSending = false;
 
@@ -47,10 +49,19 @@ export const processAwaitingSends = async (client) => {
       console.log(`[SendWorker] Sending "${fileName}" -> chat ${recipientChatId} ...`);
 
       try {
+        const videoDetails = await getVideoDetails(ev.location);
+
         await client.sendFile(recipientChatId, {
           file: ev.location,
           caption: `✅ Encoded video ready:\n${fileName}`,
           supportsStreaming: true,
+          attributes: [
+            new Api.DocumentAttributeVideo({
+              w: videoDetails.width,
+              h: videoDetails.height,
+              duration: videoDetails.duration,
+            })
+          ]
         });
 
         await prisma.encodedVideo.update({ where: { id: ev.id }, data: { status: 'sent' } });
