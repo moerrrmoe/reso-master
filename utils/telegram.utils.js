@@ -10,13 +10,13 @@
 export const extractVideoTitle = (message) => {
   const attributes = message.media?.document?.attributes || message.document?.attributes || [];
   for (const attr of attributes) {
-    if (attr.fileName) return attr.fileName;
+    if (attr.fileName) return attr.fileName.split(".")[0];
   }
-  if (message.file?.name) return message.file.name;
+  if (message.file?.name) return message.file.name.split(".")[0];
   if (message.message?.trim().length > 0) {
-    return `${message.message.trim().split('\n')[0].slice(0, 60)}.mp4`;
+    return `${message.message.trim().split('\n')[0].slice(0, 60)}`;
   }
-  return `video_${message.id}.mp4`;
+  return `video_${message.id}`;
 };
 
 /**
