@@ -68,6 +68,7 @@ export const processAwaitingSends = async (client) => {
               w: videoDetails.width,
               h: videoDetails.height,
               duration: videoDetails.duration,
+              supportsStreaming: true
             })
           ]
         });
