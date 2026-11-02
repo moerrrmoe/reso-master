@@ -27,9 +27,7 @@ const onMessage = async (event) => {
   const user = await resolveAuthorizedUser(message);
   if (!user) {
     if (isVideoMessage(message)) {
-      await message.reply({
-        message: '🚫 Not authorized.\nSend /start <pass_key> to authenticate.',
-      }).catch(() => {});
+      console.log("Not Authorized user");
     }
     return;
   }
